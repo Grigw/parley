@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Headphones
@@ -351,19 +352,34 @@ private fun CaptionCard(
                 }
             }
             Spacer(Modifier.height(10.dp))
-            // 訳文（主）。最新行へ自動スクロール。
-            val scroll = rememberScrollState()
-            LaunchedEffect(text) { scroll.animateScrollTo(scroll.maxValue) }
-            Text(
-                text = text.ifEmpty { placeholder },
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (text.isEmpty()) {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
-                modifier = Modifier.fillMaxWidth().weight(1f).verticalScroll(scroll),
-            )
+val scroll = rememberScrollState()
+LaunchedEffect(text) { scroll.animateScrollTo(scroll.maxValue) }
+
+if (text.isEmpty()) {
+    Text(
+        text = placeholder,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+    )
+} else {
+    SelectionContainer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(scroll),
+        )
+    }
+}
             // 原文（副）。あるときだけ小さく表示。
             if (source.isNotEmpty()) {
                 Spacer(Modifier.height(8.dp))
